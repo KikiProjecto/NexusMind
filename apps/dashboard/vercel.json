@@ -1,0 +1,6 @@
+{
+  "buildCommand": "NEXT_PRIVATE_SKIP_DEPS_STATUS_CHECK=1 next build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
+}

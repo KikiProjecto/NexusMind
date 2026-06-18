@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nexus-dark: #0B0C10;
+  --color-nexus-panel: #1F2833;
+  --color-nexus-cyan: #66FCF1;
+  --color-nexus-teal: #45A29E;
+  --color-nexus-light: #C5C6C7;
+
+  --font-heading: "Sora", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+body {
+  background-color: var(--color-nexus-dark);
+  color: var(--color-nexus-light);
+  font-family: var(--font-body);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: #FFFFFF;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-nexus-cyan), var(--color-nexus-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
