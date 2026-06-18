@@ -1,6 +1,21 @@
-# NexusMind
+<p align="center">
+  <img src="header.png" alt="NexusMind" width="100%" />
+</p>
 
-**Verifiable, decentralized multi-agent coordination with persistent memory.**
+<p align="center">
+  <strong>Verifiable Multi-Agent Coordination with Persistent Memory</strong>
+</p>
+
+<p align="center">
+  <a href="https://nexus-mind.vercel.app">Live Dashboard</a> |
+  <a href="docs/getting-started.md">Getting Started</a> |
+  <a href="docs/architecture.md">Architecture</a> |
+  <a href="docs/sdk-reference.md">SDK Reference</a>
+</p>
+
+---
+
+# NexusMind
 
 <div align="center">
   <img src="header.png" alt="current visual" width="100%"/>
@@ -35,7 +50,7 @@ This is not a chatbot wrapper. It is a working coordination layer for autonomous
 NexusMind operates across four layers:
 
 ```
- Dashboard (Next.js)          Wallet Integration
+ Dashboard (Next.js 16)         Wallet Integration (@mysten/dapp-kit)
        |                             |
        v                             v
  +---------------------------------------------------+
@@ -46,18 +61,30 @@ NexusMind operates across four layers:
        v            v            v            v
  +---------------------------------------------------+
  |              NexusMind SDK (@nexusmind/sdk)        |
- |  MemoryManager | ArtifactManager | SealManager     |
+ |  AgentMemory | ArtifactManager | SealManager       |
  +---------------------------------------------------+
        |            |            |            |
        v            v            v            v
  +---------------------------------------------------+
  |              Infrastructure Layer                  |
- |  MemWal     | Walrus      | Seal       | Sui      |
- |  (Memory)   | (Storage)   | (Encrypt)  | (Chain)  |
+ |  MemWal    |  Walrus   |  Seal    |  Sui Stack Msg |
+ |  (memory)  |  (blobs)  |  (enc)   |  (messaging)   |
+ +---------------------------------------------------+
+       |            |            |            |
+       v            v            v            v
+ +---------------------------------------------------+
+ |              Sui Blockchain                        |
+ |  AgentRegistry | AgentArtifact | Workflow | Events |
  +---------------------------------------------------+
 ```
 
-**Onchain contracts** (Sui Move) manage agent registration, artifact provenance records, workflow state machines, and Seal access policies. **Walrus** provides decentralized blob storage for all agent-produced artifacts. **MemWal** gives each agent persistent, semantically searchable memory backed by Walrus. **Seal** provides threshold encryption so agents can share sensitive data with only authorized peers.
+**Agent Layer** -- Four specialist agents (Orchestrator, Researcher, Trader, Monitor) each with distinct roles, namespaced memory, and capability-gated permissions.
+
+**SDK Layer** -- `@nexusmind/sdk` abstracts all infrastructure calls into a single `NexusMindAgent` class with typed methods for memory, artifacts, encryption, and messaging.
+
+**Infrastructure Layer** -- MemWal provides semantic persistent memory backed by Walrus. Walrus stores all artifacts as content-addressed blobs. Seal provides threshold encryption for private cross-agent data sharing. Sui Stack Messaging enables encrypted agent-to-agent coordination.
+
+**Blockchain Layer** -- Sui Move smart contracts govern agent registration, capability management, artifact provenance, and workflow state machines. Every agent action produces an onchain event.
 
 ---
 
@@ -65,41 +92,20 @@ NexusMind operates across four layers:
 
 ```
 nexusmind/
-|-- move/
-|   |-- Move.toml
-|   `-- sources/
-|       |-- agent_registry.move      Agent registration, capabilities, roles
-|       |-- artifact_record.move     Artifact struct linking blobs to agents
-|       |-- seal_policies.move       Seal access control policies
-|       `-- workflow.move            Workflow state machine
-|
-|-- packages/
-|   `-- nexusmind-sdk/
-|       `-- src/
-|           |-- agent.ts             Agent class with memory + storage + identity
-|           |-- memory.ts            MemWal abstraction layer
-|           |-- artifacts.ts         Walrus blob management
-|           |-- seal.ts              Seal encryption helpers
-|           |-- sui.ts               Sui transaction building
-|           |-- types.ts             All TypeScript types and interfaces
-|           `-- index.ts             Public exports
-|
-|-- agents/
-|   |-- orchestrator.ts              Coordinates all specialist agents
-|   |-- researcher.ts                Long-running research agent
-|   |-- trader.ts                    Trading signal agent
-|   `-- monitor.ts                   Infrastructure monitoring agent
-|
-|-- apps/
-|   `-- dashboard/                   Next.js 16 dashboard
-|       `-- src/
-|           |-- app/                 App Router pages
-|           `-- components/          UI components
-|
-|-- relayer/                         Sui Stack Messaging relayer
-|-- scripts/                         Deploy and seed scripts
-|-- tests/                           E2E and Move tests
-`-- docs/                            Technical documentation
+  .github/workflows/         CI and deploy pipelines
+  agents/                    Agent implementations (orchestrator, researcher, trader, monitor)
+  apps/dashboard/            Next.js 16 dashboard (the only Vercel deployment target)
+    src/app/                 App Router pages and API routes
+    src/components/          React components and design system
+    src/hooks/               Data fetching hooks
+    src/lib/                 Client configuration (Sui, Walrus, MemWal)
+    src/types/               Shared TypeScript types
+  docs/                      Technical documentation
+  move/sources/              Sui Move smart contracts
+  packages/nexusmind-sdk/    TypeScript SDK for agent development
+  relayer/                   Sui Stack Messaging relay server
+  scripts/                   Deployment and seed scripts
+  tests/e2e/                 End-to-end test suite
 ```
 
 ---
@@ -107,17 +113,15 @@ nexusmind/
 ## Technology Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Smart Contracts | Sui Move | Agent registry, artifact provenance, workflow state, access policies |
-| Persistent Memory | MemWal | Semantic search over agent memories, backed by Walrus |
-| Decentralized Storage | Walrus | Immutable blob storage for artifacts, reports, datasets |
+|---|---|---|
+| Blockchain | Sui Move | Agent registry, artifact records, workflow state, capability management |
+| Storage | Walrus | Decentralized blob storage for agent artifacts, logs, and datasets |
+| Memory | MemWal | Persistent semantic memory with natural language recall and restore |
 | Encryption | Seal | Threshold encryption for private agent-to-agent data sharing |
-| Messaging | Sui Stack Messaging | Encrypted agent-to-agent communication with Walrus archival |
-| SDK | TypeScript | Unified abstraction over all infrastructure services |
-| Dashboard | Next.js 16, Tailwind CSS 4, Framer Motion | Agent monitoring, memory exploration, artifact viewing |
-| Wallet Integration | @mysten/dapp-kit | Sui wallet connection for the dashboard |
-| State Management | Zustand, TanStack Query | Client-side state and server data caching |
-| Monorepo | Turborepo, pnpm | Workspace management and build orchestration |
+| Messaging | Sui Stack Messaging | Encrypted agent coordination with automatic Walrus archival |
+| Frontend | Next.js 16, React 19, Tailwind CSS 4 | Dashboard with wallet integration |
+| SDK | TypeScript | Unified developer interface over the full infrastructure stack |
+| Tooling | Turborepo, pnpm, Vitest | Monorepo management, dependency resolution, unit testing |
 
 ---
 
@@ -126,9 +130,8 @@ nexusmind/
 ### Prerequisites
 
 - Node.js 20 or later
-- pnpm 11 or later
-- Sui CLI (for Move contract deployment)
-- A Sui testnet wallet with SUI tokens (use the Sui faucet)
+- pnpm 9 or later
+- A Sui wallet with testnet SUI tokens
 - MemWal delegate key and account ID (from the MemWal Playground)
 
 ### Installation
@@ -139,259 +142,198 @@ cd NexusMind
 pnpm install
 ```
 
-### Environment Setup
+### Environment Configuration
+
+Copy the example environment file and fill in all required values:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your credentials. See [Configuration](#configuration) for details on each variable.
-
-### Deploy Move Contracts
+Validate your configuration:
 
 ```bash
-npx tsx scripts/deploy-move.ts
+npx tsx scripts/check-env.ts
 ```
 
-This publishes the Move package to Sui testnet and outputs the `MOVE_PACKAGE_ID` and `AGENT_REGISTRY_ID`. Add these values to your `.env.local`.
-
-### Seed Agent Memories
+### Build
 
 ```bash
-npx tsx scripts/seed-agents.ts
+pnpm build
 ```
 
-Populates initial semantic memories for the researcher, trader, and monitor agents.
-
-### Run the Dashboard
+### Run the Dashboard Locally
 
 ```bash
-cd apps/dashboard
-pnpm dev
+pnpm --filter dashboard dev
 ```
 
-The dashboard is available at `http://localhost:3000`.
+The dashboard will be available at `http://localhost:3000`.
 
-### Run Agent Demos
+### Run Tests
 
 ```bash
-# Run the full research workflow
-npx tsx agents/orchestrator.ts
-
-# Run individual agents
-npx tsx agents/researcher.ts
-npx tsx agents/trader.ts
-npx tsx agents/monitor.ts
+pnpm test
 ```
 
 ---
 
 ## Move Contracts
 
-Four modules deployed as a single Sui Move package:
+Four Sui Move modules define the onchain protocol:
 
-### agent_registry
+| Module | Purpose |
+|---|---|
+| `agent_registry.move` | Agent registration, role assignment, capability minting |
+| `artifact_record.move` | Links Walrus blob IDs to agents with typed metadata |
+| `seal_policies.move` | Seal `seal_approve` entry functions for access control |
+| `workflow.move` | Workflow state machine (pending, running, completed, failed) |
 
-Manages agent registration with capability-based access control. Each agent receives an `AgentCap` object that grants role-specific permissions.
+### Deploy to Testnet
 
-```move
-public struct AgentCap has key, store {
-    id: UID,
-    agent_address: address,
-    role: String,
-    namespace: String,
-}
+```bash
+npx tsx scripts/deploy-move.ts
 ```
 
-### artifact_record
-
-Links Walrus blob IDs to agent identities onchain. Provides an immutable provenance record for every artifact produced by the system.
-
-```move
-public struct AgentArtifact has key, store {
-    id: UID,
-    blob_id: u256,
-    agent_address: address,
-    artifact_type: String,
-    task_id: String,
-    created_epoch: u64,
-    metadata: VecMap<String, String>,
-}
-```
-
-### workflow
-
-Onchain state machine tracking multi-agent workflows from creation through completion or failure.
-
-### seal_policies
-
-Seal-compatible `seal_approve` functions implementing allowlist-based access control for encrypted artifacts.
+The script outputs the `MOVE_PACKAGE_ID` and `AGENT_REGISTRY_ID` values to set in your environment.
 
 ---
 
 ## SDK
 
-The `@nexusmind/sdk` package provides a unified TypeScript interface over all infrastructure services.
-
-### NexusMindAgent
-
-The primary class combining memory, storage, encryption, and blockchain identity:
+The `@nexusmind/sdk` package provides a unified TypeScript interface:
 
 ```typescript
 import { NexusMindAgent } from '@nexusmind/sdk';
 
 const agent = new NexusMindAgent({
-  agentAddress: '0x...',
-  privateKey: process.env.AGENT_PRIVATE_KEY,
   role: 'researcher',
   namespace: 'nexusmind-researcher-v1',
-  memwalConfig: { /* ... */ },
-  walrusConfig: { /* ... */ },
-  sealConfig: { /* ... */ },
-  suiConfig: { /* ... */ },
+  privateKey: process.env.AGENT_PRIVATE_KEY,
 });
 
-// Store a memory
-await agent.memory.remember('Completed DeFi analysis. TVL up 34%.');
+// Store a memory (persisted to Walrus via MemWal)
+await agent.memory.remember(
+  'DeFi analysis complete. TVL increased 34% across top protocols.'
+);
 
-// Recall relevant context
-const memories = await agent.memory.recall('DeFi TVL findings');
+// Recall semantically similar memories
+const memories = await agent.memory.recall('DeFi TVL trends');
 
 // Upload an artifact to Walrus
-const blobId = await agent.artifacts.upload(reportBuffer, {
+const { blobId } = await agent.artifacts.upload(reportData, {
   type: 'report',
   taskId: 'task-001',
 });
 
-// Record artifact provenance onchain
-await agent.sui.recordArtifact(blobId, 'report', 'task-001');
+// Encrypt data for another agent using Seal
+const sealed = await agent.seal.encryptForAllowlist(data, allowlistId);
 ```
 
-See [docs/sdk-reference.md](docs/sdk-reference.md) for the complete API reference.
+Full reference: [docs/sdk-reference.md](docs/sdk-reference.md)
 
 ---
 
 ## Agent Demos
 
-NexusMind ships with four agent implementations demonstrating the full coordination workflow:
+Four agents demonstrate the framework capabilities:
 
-| Agent | Role | Description |
-|-------|------|-------------|
-| Orchestrator | Coordinator | Creates workflows, dispatches tasks, aggregates results |
-| Researcher | Specialist | Recalls prior context, generates research reports, stores artifacts |
-| Trader | Specialist | Decrypts research via Seal, produces trading signals |
-| Monitor | Infrastructure | Tracks agent health, Walrus network status, latency metrics |
+| Agent | File | Description |
+|---|---|---|
+| Orchestrator | `agents/orchestrator.ts` | Coordinates multi-agent workflows, delegates tasks, aggregates results |
+| Researcher | `agents/researcher.ts` | Analyzes market data, stores findings as encrypted Walrus artifacts |
+| Trader | `agents/trader.ts` | Consumes research artifacts via Seal decryption, generates trading signals |
+| Monitor | `agents/monitor.ts` | Tracks infrastructure health, logs network metrics |
 
-The core demonstration flow:
+Run an agent:
 
-1. Orchestrator creates a workflow and dispatches a research task
-2. Researcher recalls prior findings from MemWal, generates a report, encrypts it with Seal, uploads to Walrus, and records provenance onchain
-3. Trader retrieves the encrypted report from Walrus, decrypts with Seal, and generates trading signals
-4. Orchestrator aggregates results and marks the workflow as completed
+```bash
+npx tsx agents/researcher.ts
+```
 
-See [docs/agent-demos.md](docs/agent-demos.md) for detailed instructions.
+Full guide: [docs/agent-demos.md](docs/agent-demos.md)
 
 ---
 
 ## Dashboard
 
-The Next.js dashboard provides a visual interface for inspecting the NexusMind system:
+The dashboard is deployed at [nexus-mind.vercel.app](https://nexus-mind.vercel.app) and provides:
 
-- **Agent Cards** -- Live status display for each registered agent with role and activity indicators
-- **Memory Explorer** -- Browse and search agent memories stored in MemWal namespaces
-- **Artifact Viewer** -- View and download Walrus-stored blobs with provenance metadata
-- **Wallet Integration** -- Connect a Sui wallet to interact with onchain data
-
-The dashboard connects to Sui testnet by default and uses `@mysten/dapp-kit` for wallet management.
+- **Memory Explorer** -- Search and browse agent memories with natural language queries
+- **Artifact Viewer** -- Inspect Walrus-stored artifacts with provenance and Seal encryption status
+- **Workflow Debugger** -- Monitor workflow execution with live status updates
+- **Agent Registry** -- View registered agents, their roles, capabilities, and activity
+- **Memory Restore Demo** -- Demonstrates MemWal's `restore()` capability, proving memory portability from Walrus
 
 ---
 
 ## Configuration
 
-All configuration is managed through environment variables. Copy `.env.example` to `.env.local` and fill in your values.
+All configuration is through environment variables. See `.env.example` for the complete list:
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `MEMWAL_DELEGATE_KEY` | MemWal delegate key from the Playground | Yes |
-| `MEMWAL_ACCOUNT_ID` | MemWal account identifier | Yes |
-| `MEMWAL_SERVER_URL` | MemWal relay server endpoint | Yes |
-| `WALRUS_NETWORK` | Walrus network: `testnet` or `mainnet` | Yes |
-| `WALRUS_PUBLISHER_URL` | Walrus publisher endpoint | Yes |
-| `WALRUS_AGGREGATOR_URL` | Walrus aggregator endpoint | Yes |
-| `SUI_NETWORK` | Sui network: `testnet` or `mainnet` | Yes |
-| `SUI_RPC_URL` | Sui fullnode JSON-RPC URL | Yes |
-| `AGENT_PRIVATE_KEY` | Ed25519 private key for agent transactions | Yes |
-| `MOVE_PACKAGE_ID` | Deployed Move package object ID | After deploy |
-| `AGENT_REGISTRY_ID` | Agent registry shared object ID | After deploy |
-| `SEAL_KEY_SERVER_URLS` | Comma-separated Seal key server URLs | For encryption |
-| `ANTHROPIC_API_KEY` | Anthropic API key for LLM-powered agents | For agent demos |
+| Variable | Required | Description |
+|---|---|---|
+| `MEMWAL_DELEGATE_KEY` | Yes | MemWal delegate key (base64url, 32 bytes) |
+| `MEMWAL_ACCOUNT_ID` | Yes | MemWal account identifier |
+| `MEMWAL_SERVER_URL` | Yes | MemWal relayer endpoint |
+| `WALRUS_NETWORK` | Yes | `testnet` or `mainnet` |
+| `WALRUS_PUBLISHER_URL` | Yes | Walrus publisher endpoint |
+| `WALRUS_AGGREGATOR_URL` | Yes | Walrus aggregator endpoint |
+| `SUI_NETWORK` | Yes | `testnet` or `mainnet` |
+| `SUI_RPC_URL` | Yes | Sui full node RPC URL |
+| `AGENT_PRIVATE_KEY` | Yes | Ed25519 private key for agent transactions |
+| `MOVE_PACKAGE_ID` | Yes | Deployed Move package object ID |
+| `ANTHROPIC_API_KEY` | Yes | API key for agent LLM calls |
 
 ---
 
 ## Testing
 
-### Type Checking
+Unit tests use Vitest with fully mocked clients (no network calls required):
 
 ```bash
-pnpm type-check
-```
-
-### Unit Tests
-
-```bash
+# Run all tests
 pnpm test
-```
 
-### Memory Restore Verification
+# Run with coverage
+pnpm test -- --coverage
 
-Demonstrates the durability guarantee -- wipes local state and rebuilds entirely from Walrus:
+# Type check the entire monorepo
+pnpm type-check
 
-```bash
-npx tsx scripts/restore-memory.ts
+# Lint all packages
+pnpm lint
 ```
 
 ---
 
 ## Deployment
 
-### Dashboard to Vercel
+The dashboard deploys automatically to Vercel on every push to `main`:
 
-The dashboard is configured for deployment on Vercel with the Next.js framework preset.
+1. CI runs type-check, lint, and tests
+2. If all pass, the deploy workflow builds and ships to `nexus-mind.vercel.app`
+3. Manual deployment: `vercel --prod` from the repo root
 
-```bash
-cd apps/dashboard
-npx vercel --prod
-```
-
-Set the following environment variables in your Vercel project settings:
-
-- `NEXT_PUBLIC_WALRUS_NETWORK`
-- `NEXT_PUBLIC_SUI_NETWORK`
-- `NEXT_PUBLIC_MOVE_PACKAGE_ID`
-
-### Move Contracts to Sui Testnet
-
-```bash
-npx tsx scripts/deploy-move.ts
-```
+See `.github/workflows/` for pipeline definitions.
 
 ---
 
 ## Documentation
 
-Detailed documentation is available in the `docs/` directory:
-
-- [Getting Started](docs/getting-started.md) -- Installation, setup, and first run
-- [Architecture](docs/architecture.md) -- System design and component relationships
-- [SDK Reference](docs/sdk-reference.md) -- Complete API documentation for `@nexusmind/sdk`
-- [Agent Demos](docs/agent-demos.md) -- Running and understanding the agent demonstrations
+| Document | Description |
+|---|---|
+| [Getting Started](docs/getting-started.md) | Installation, configuration, and first-run guide |
+| [Architecture](docs/architecture.md) | System design, component relationships, data flow |
+| [SDK Reference](docs/sdk-reference.md) | Full API documentation for `@nexusmind/sdk` |
+| [Agent Demos](docs/agent-demos.md) | How to run and extend each agent implementation |
 
 ---
 
 ## License
 
-MIT
+MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-Built on the Sui ecosystem: Sui Move, Walrus, MemWal, Seal, and Sui Stack Messaging.
+Built with Sui Move, Walrus, MemWal, Seal, and Sui Stack Messaging.

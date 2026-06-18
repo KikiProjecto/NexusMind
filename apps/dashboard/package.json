@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "NEXT_PRIVATE_SKIP_DEPS_STATUS_CHECK=1 next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@mysten/dapp-kit": "^1.1.0",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/d3": "^7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -33,3 +35,4 @@
     "typescript": "^5"
   }
 }
+

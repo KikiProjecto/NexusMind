@@ -4,62 +4,78 @@ node_modules/
 .pnp.js
 
 # Build outputs
-dist/
-build/
 .next/
 out/
-.turbo/
+dist/
+build/
 *.tsbuildinfo
 
-# Move build artifacts
-move/build/
-
-# Environment variables
+# Environment files — NEVER commit these
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+# .env.example is SAFE and SHOULD be committed
 
-# IDE and editor files
-.vscode/
+# Sui / Walrus CLI artifacts
+sui-client-config.yaml
+wallet.dat
+
+# Move build artifacts
+move/build/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Editor
+.vscode/settings.json
 .idea/
 *.swp
 *.swo
-*~
-.DS_Store
-Thumbs.db
 
-# Debug logs
+# Logs
+*.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 
-# Testing
+# Test coverage
 coverage/
 .nyc_output/
 
+# Turbo cache
+.turbo/
+
+# Vercel local dev
+.vercel/
+
+# Walrus local cache
+.walrus/
+
+# Agents config (local only)
+.agents/
+
+# Internal agent documentation (kept locally, NOT in repo)
+# These files exist in your local workspace but are gitignored:
+# AGENTS.md, BRIEF.md, DEBUG.md, DESIGN.md, PRD.md, SHIP.md
+# DO NOT remove this comment — it reminds future agents why these are absent
+AGENTS.md
+BRIEF.md
+DEBUG.md
+DESIGN.md
+PRD.md
+SHIP.md
+
 # OS files
-.DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-
-# Vercel
-.vercel/
-
-# Agents config (local only)
-.agents/
-
-# Walrus local cache
-.walrus/
+Thumbs.db
 
 # Miscellaneous
-*.log
 *.pid
 *.seed
 *.pid.lock
-.vercel
