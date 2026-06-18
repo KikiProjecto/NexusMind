@@ -1,6 +1,6 @@
 {
-  "buildCommand": "NEXT_PRIVATE_SKIP_DEPS_STATUS_CHECK=1 next build",
-  "installCommand": "pnpm install",
+  "buildCommand": "cd ../.. && NEXT_PRIVATE_SKIP_DEPS_STATUS_CHECK=1 pnpm turbo build --filter=dashboard",
+  "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next"
 }
