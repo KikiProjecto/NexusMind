@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://nexusmind.vercel.app">Live Dashboard</a> |
+  <a href="https://nexusmind-amber.vercel.app">Live Dashboard</a> |
   <a href="docs/getting-started.md">Getting Started</a> |
   <a href="docs/architecture.md">Architecture</a> |
   <a href="docs/sdk-reference.md">SDK Reference</a>
