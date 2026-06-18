@@ -2,7 +2,7 @@
   <img src="header.png" alt="NexusMind" width="100%" />
 </p>
 
-<p align="center" size="30">
+<p align="center">
   <strong>Verifiable Multi-Agent Coordination with Persistent Memory</strong>
 </p>
 
