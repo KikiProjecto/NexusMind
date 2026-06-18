@@ -1,0 +1,5 @@
+{
+  "buildCommand": "NEXT_PRIVATE_SKIP_DEPS_STATUS_CHECK=1 pnpm turbo build --filter=dashboard",
+  "outputDirectory": "apps/dashboard/.next",
+  "framework": "nextjs"
+}
