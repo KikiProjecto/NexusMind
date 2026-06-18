@@ -51,7 +51,6 @@ export default function ExplorerPage() {
             <Button 
               key={ns} 
               variant={activeNamespace === ns ? 'secondary' : 'ghost'} 
-              size="sm"
               onClick={() => setActiveNamespace(ns)}
               className="rounded-full shrink-0"
             >

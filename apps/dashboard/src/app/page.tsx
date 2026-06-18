@@ -1,571 +1,333 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import {
-  Brain,
-  Database,
-  Shield,
-  Network,
-  ArrowRight,
-  Zap,
-  Lock,
-  Workflow as WorkflowIcon,
-  Code2,
-  MemoryStick,
-  AlertTriangle,
-  EyeOff,
-} from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { Footer } from '@/components/Footer';
+import { MemoryConstellation } from '@/components/MemoryConstellation';
+import { Database, Lock, EyeOff, Code2, Link as LinkIcon, RefreshCcw } from 'lucide-react';
 
-/* ─── Animation variants ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+const container = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.3 },
+  },
 };
 
-const stagger = {
-  visible: { transition: { staggerChildren: 0.12 } },
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
-/* ─── CountUp Component ─── */
-function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-100px' });
-  const [count, setCount] = useState(0);
+const scrollReveal = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const }
+  },
+};
 
-  useEffect(() => {
-    if (!inView) return;
-    const duration = 1800;
-    const start = Date.now();
-    const tick = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [inView, target]);
-
-  return (
-    <span ref={ref}>
-      {count.toLocaleString()}
-      {suffix}
-    </span>
-  );
-}
-
-/* ─── Floating Memory Cards ─── */
-const FLOAT_CARDS = [
-  { label: 'DeFi TVL +34%', delay: 0, x: -60, y: -20 },
-  { label: 'Blob: 0x7a8f...', delay: 0.3, x: 40, y: 30 },
-  { label: 'SUI/USDT LONG', delay: 0.6, x: -30, y: 60 },
-];
-
-/* ─── SDK Code Snippet ─── */
-const SDK_CODE = `import { NexusMindAgent } from 'nexusmind-sdk';
-
-// Create an agent with persistent memory
-const researcher = new NexusMindAgent({
-  role: 'researcher',
-  namespace: 'nexusmind-researcher-v1',
-  sealPolicy: 'allowlist',
-});
-
-// Remember findings — backed by Walrus
-await researcher.remember(
-  'DeFi TVL increased 34% in Q3. Top protocols: Aave, Compound, Uniswap.'
-);
-
-// Recall with semantic search
-const context = await researcher.recall(
-  'What were the DeFi trends?',
-  { limit: 5 }
-);
-
-// Store encrypted artifact
-const artifact = await researcher.storeArtifact({
-  data: reportPdf,
-  type: 'report',
-  encrypt: true,  // Seal threshold encryption
-  allowedAgents: ['trader', 'orchestrator'],
-});
-
-// Restore after memory loss — the killer feature
-await researcher.restore();  // Rebuilds from Walrus`;
-
-/* ─── Problem Cards ─── */
 const PROBLEMS = [
   {
-    icon: MemoryStick,
-    title: 'Stateless Agents',
-    description:
-      'AI agents lose all context between sessions. Every conversation starts from zero, wasting time and compute rebuilding understanding.',
+    title: 'Stateless by default',
+    icon: LinkIcon,
+    description: 'Every agent session starts from zero. Context, decisions, and learned behavior disappear when the process ends.',
+    borderAccent: 'border-b-semantic-error/40'
   },
   {
-    icon: AlertTriangle,
-    title: 'Fragmented Context',
-    description:
-      'Multi-agent systems lack shared memory. Agents cannot build on each other\'s work, leading to duplicated effort and inconsistent outputs.',
-  },
-  {
-    icon: EyeOff,
-    title: 'Unverifiable Actions',
-    description:
-      'Agent decisions are opaque. There\'s no audit trail, no provenance, and no way to verify what an agent did or why it made a choice.',
-  },
-];
-
-/* ─── Features ─── */
-const FEATURES = [
-  {
+    title: 'Memory is fragmented',
     icon: Database,
-    title: 'Persistent Memory',
-    subtitle: 'Powered by MemWal + Walrus',
-    description:
-      'Agents store and recall semantic memories backed by Walrus decentralized storage. Memories survive crashes, restarts, and even complete data loss — just call restore().',
-    code: `// Remember with full semantic context
-await agent.remember(
-  'Q3 DeFi analysis: TVL +34%, Aave leads at $12.4B'
-);
-
-// Recall naturally — semantic search, not SQL
-const ctx = await agent.recall('DeFi trends');
-
-// The killer feature: restore from Walrus
-await agent.restore(); // Full memory rebuilt`,
+    description: 'Memory is locked to a single app, model, or device — impossible to share, export, or verify.',
+    borderAccent: 'border-b-semantic-warning/40'
   },
   {
-    icon: Shield,
-    title: 'Seal Encryption',
-    subtitle: 'Threshold Access Control',
-    description:
-      'Private agent data is encrypted with Seal threshold encryption before storage on Walrus. Only authorized agents with the correct policy can decrypt — no single point of failure.',
-    code: `// Envelope encryption with Seal
-const sealed = await seal.encrypt(
-  symmetricKey,
-  policyId,   // Onchain access policy
-  tx           // PTB with sender set
-);
-
-// Only allowed agents can decrypt
-const key = await seal.decrypt(sealed, tx);
-const data = await decryptAES(blob, key);`,
-  },
-  {
-    icon: WorkflowIcon,
-    title: 'Artifact Workflows',
-    subtitle: 'Onchain Provenance',
-    description:
-      'Every research report, trading signal, and dataset is stored as a Walrus blob with an onchain provenance record. Agents coordinate through Sui-backed workflow state machines.',
-    code: `// Create onchain workflow
-const wf = await workflow.create({
-  name: 'DeFi Research Pipeline',
-  agents: [researcher, trader, orchestrator],
-});
-
-// Each task produces verifiable artifacts
-await wf.executeTask({
-  agent: researcher,
-  action: 'analyze',
-  output: { blobId, artifactId },
-});`,
-  },
-  {
-    icon: Code2,
-    title: 'Developer SDK',
-    subtitle: 'Build in Minutes',
-    description:
-      'The NexusMind SDK wraps MemWal, Walrus, Seal, and Sui into a single coherent API. Register agents, store memories, encrypt artifacts, and coordinate workflows with a few lines of TypeScript.',
-    code: SDK_CODE,
-  },
+    title: 'No verifiable provenance',
+    icon: EyeOff,
+    description: "There is no cryptographic proof that an agent's memory is intact, untampered, or authentic.",
+    borderAccent: 'border-b-semantic-error/40'
+  }
 ];
 
-/* ─── Stats ─── */
-const STATS = [
-  { label: 'Memories Stored', value: 12847, suffix: '+' },
-  { label: 'Artifacts Created', value: 3291, suffix: '' },
-  { label: 'Workflows Executed', value: 856, suffix: '' },
-  { label: 'Agents Active', value: 4, suffix: '' },
-];
+export default function LandingPage() {
+  const { scrollY } = useScroll();
+  const opacity = useTransform(scrollY, [0, 100], [1, 0]);
 
-/* ─── Architecture Layers ─── */
-const ARCH_LAYERS = [
-  { name: 'AI Agents', desc: 'Researcher • Trader • Monitor • Orchestrator', color: 'from-purple-500 to-accent' },
-  { name: 'NexusMind SDK', desc: 'Memory • Artifacts • Workflows • Messaging', color: 'from-accent to-blue-500' },
-  { name: 'Seal', desc: 'Threshold encryption • Access policies • Envelope pattern', color: 'from-blue-500 to-cyan-500' },
-  { name: 'MemWal', desc: 'Remember • Recall • Restore • Semantic search', color: 'from-cyan-500 to-emerald-500' },
-  { name: 'Walrus', desc: 'Blob storage • Content-addressed • Erasure coded', color: 'from-emerald-500 to-green-500' },
-  { name: 'Sui', desc: 'Smart contracts • Objects • PTBs • Events', color: 'from-blue-400 to-indigo-500' },
-];
-
-export default function HomePage() {
   return (
-    <div className="flex flex-col">
-      {/* ═══════════════ HERO ═══════════════ */}
-      <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
-        {/* Constellation BG */}
-        <div className="absolute inset-0 -z-10">
-          <svg
-            className="absolute inset-0 w-full h-full opacity-20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {Array.from({ length: 60 }, (_, i) => (
-              <circle
-                key={`star-${i}`}
-                cx={`${(i * 17 + 23) % 100}%`}
-                cy={`${(i * 13 + 7) % 100}%`}
-                r={i % 3 === 0 ? 2 : 1}
-                fill="var(--color-accent)"
-                opacity={0.3 + (i % 5) * 0.12}
-              >
-                <animate
-                  attributeName="opacity"
-                  values={`${0.2 + (i % 4) * 0.1};${0.6 + (i % 3) * 0.1};${0.2 + (i % 4) * 0.1}`}
-                  dur={`${3 + (i % 4)}s`}
-                  repeatCount="indefinite"
-                />
-              </circle>
-            ))}
-            {Array.from({ length: 20 }, (_, i) => (
-              <line
-                key={`line-${i}`}
-                x1={`${(i * 23 + 10) % 100}%`}
-                y1={`${(i * 17 + 5) % 100}%`}
-                x2={`${((i + 3) * 23 + 10) % 100}%`}
-                y2={`${((i + 2) * 17 + 5) % 100}%`}
-                stroke="var(--color-accent)"
-                strokeWidth="0.5"
-                opacity="0.08"
-              />
-            ))}
-          </svg>
-          <div className="absolute inset-0 bg-gradient-to-b from-bg-base via-transparent to-bg-base" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px]" />
-        </div>
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="space-y-8"
-          >
-            {/* Status badge */}
-            <motion.div variants={fadeUp as any} className="flex justify-center">
-              <Badge variant="info" dot>
-                <Zap className="h-3 w-3" /> System Online — All Agents Active
-              </Badge>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              variants={fadeUp as any}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading tracking-tight"
+    <div className="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] w-full">
+      {/* HERO SECTION */}
+      <section className="relative w-full min-h-[100svh] flex flex-col justify-center overflow-hidden">
+        <div className="container-custom relative z-20">
+          <div className="hero-grid grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[100svh]">
+            
+            {/* Left Content (5 cols) */}
+            <motion.div 
+              className="col-span-1 md:col-span-5 flex flex-col items-start justify-center pt-24 md:pt-0"
+              variants={container}
+              initial="hidden"
+              animate="visible"
             >
-              <span className="font-light text-white/90">NEXUS</span>
-              <span className="font-bold text-gradient">MIND</span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.div
-              variants={fadeUp as any}
-              className="mx-auto max-w-2xl text-lg sm:text-xl text-text-secondary leading-relaxed"
-            >
-              Where AI agents{' '}
-              <span className="text-accent font-medium">remember</span>,
-              reason, and persist across the decentralized web.
-              Powered by Walrus, Sui, and Seal.
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              variants={fadeUp as any}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <Link href="/explorer" id="hero-explore-btn">
-                <Button variant="primary" size="lg">
-                  Explore Memories <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/restore" id="hero-restore-btn">
-                <Button variant="secondary" size="lg">
-                  See Restore Demo
-                </Button>
-              </Link>
-            </motion.div>
-
-            {/* Floating Cards */}
-            <motion.div
-              variants={fadeUp as any}
-              className="relative h-24 mt-8 hidden md:block"
-            >
-              {FLOAT_CARDS.map((card, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{
-                    opacity: 1,
-                    y: [0, -8, 0],
-                    x: card.x,
-                  }}
-                  transition={{
-                    delay: card.delay + 0.8,
-                    duration: 0.5,
-                    y: {
-                      duration: 4 + i,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    },
-                  }}
-                  className="absolute left-1/2 glass-panel rounded-lg px-4 py-2 text-xs font-mono text-code-text"
-                  style={{ top: card.y }}
-                >
-                  {card.label}
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════ PROBLEM SECTION ═══════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
-            <motion.div variants={fadeUp as any} className="text-sm font-medium text-accent uppercase tracking-widest mb-3">
-              The Problem
-            </motion.div>
-            <motion.h2 variants={fadeUp as any} className="text-3xl sm:text-4xl font-heading font-bold text-white">
-              AI Agents Are Fundamentally Broken
-            </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            {PROBLEMS.map((problem) => (
-              <motion.div key={problem.title} variants={fadeUp as any}>
-                <Card className="h-full">
-                  <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
-                    <problem.icon className="h-6 w-6 text-accent" />
-                  </div>
-                  <h3 className="text-lg font-heading font-semibold text-white mb-3">
-                    {problem.title}
-                  </h3>
-                  <p className="text-sm text-text-secondary leading-relaxed">
-                    {problem.description}
-                  </p>
-                </Card>
+              <motion.div variants={item} className="type-eyebrow mb-6 text-[var(--color-accent)]">
+                MULTI-AGENT MEMORY
               </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════ ARCHITECTURE ═══════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-bg-surface/30">
-        <div className="mx-auto max-w-4xl">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
-            <motion.div variants={fadeUp as any} className="text-sm font-medium text-accent uppercase tracking-widest mb-3">
-              Architecture
-            </motion.div>
-            <motion.h2 variants={fadeUp as any} className="text-3xl sm:text-4xl font-heading font-bold text-white">
-              Full-Stack Decentralized Intelligence
-            </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={stagger}
-            className="space-y-3"
-          >
-            {ARCH_LAYERS.map((layer, i) => (
-              <motion.div
-                key={layer.name}
-                variants={{
-                  hidden: { opacity: 0, x: i % 2 === 0 ? -30 : 30 },
-                  visible: {
-                    opacity: 1,
-                    x: 0,
-                    transition: { duration: 0.5, delay: i * 0.1 },
-                  },
-                }}
-                className="relative glass-panel rounded-xl p-5 overflow-hidden group hover:border-border-accent transition-colors"
-              >
-                <div
-                  className={`absolute top-0 left-0 h-full w-1 bg-gradient-to-b ${layer.color} opacity-60 group-hover:opacity-100 transition-opacity`}
-                />
-                <div className="flex items-center justify-between pl-4">
-                  <div>
-                    <h3 className="font-heading font-semibold text-white text-sm sm:text-base">
-                      {layer.name}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-text-muted mt-0.5">
-                      {layer.desc}
-                    </p>
-                  </div>
-                  <div className="text-text-muted text-xs font-mono hidden sm:block">
-                    Layer {ARCH_LAYERS.length - i}
-                  </div>
-                </div>
+              
+              <motion.h1 variants={item} className="type-hero mb-6 text-left">
+                Agents that<br />
+                <span style={{ color: 'var(--color-accent)' }}>remember</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>.</span>
+              </motion.h1>
+              
+              <motion.p variants={item} className="type-body-lg mb-10 max-w-md">
+                Persistent. Verifiable. Decentralized.
+              </motion.p>
+              
+              <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Link href="/explorer" className="btn-primary justify-center">
+                  Explore Memory
+                </Link>
+                <Link href="/restore" className="btn-ghost justify-center">
+                  View Demo ↗
+                </Link>
               </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════ FEATURES ═══════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={stagger}
-            className="text-center mb-20"
-          >
-            <motion.div variants={fadeUp as any} className="text-sm font-medium text-accent uppercase tracking-widest mb-3">
-              Features
             </motion.div>
-            <motion.h2 variants={fadeUp as any} className="text-3xl sm:text-4xl font-heading font-bold text-white">
-              Everything Agents Need to Operate Autonomously
-            </motion.h2>
-          </motion.div>
 
-          <div className="space-y-24">
-            {FEATURES.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-80px' }}
-                variants={stagger}
-                className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-10 lg:gap-16 items-center`}
-              >
-                {/* Text */}
-                <motion.div variants={fadeUp as any} className="flex-1 space-y-5">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <feature.icon className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-heading font-semibold text-white">
-                        {feature.title}
-                      </h3>
-                      <p className="text-xs text-text-muted">{feature.subtitle}</p>
-                    </div>
-                  </div>
-                  <p className="text-text-secondary leading-relaxed">
-                    {feature.description}
-                  </p>
-                </motion.div>
+            {/* Right Content (7 cols) - 3D Constellation */}
+            <div className="col-span-1 md:col-span-7 absolute md:relative inset-0 md:inset-auto h-[400px] md:h-[600px] right-0 translate-x-[10%] md:translate-x-0 opacity-40 md:opacity-100 -z-10 md:z-10 pointer-events-none">
+              <MemoryConstellation />
+            </div>
 
-                {/* Code */}
-                <motion.div variants={fadeUp as any} className="flex-1 w-full">
-                  <CodeBlock
-                    code={feature.code}
-                    language="typescript"
-                    title={`${feature.title.toLowerCase().replace(/\s+/g, '-')}.ts`}
-                    showLineNumbers
-                  />
-                </motion.div>
-              </motion.div>
-            ))}
           </div>
         </div>
-      </section>
-
-      {/* ═══════════════ STATS ═══════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-bg-surface/30">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {STATS.map((stat) => (
-              <div
-                key={stat.label}
-                className="glass-panel rounded-xl p-6 text-center"
-              >
-                <div className="text-3xl sm:text-4xl font-heading font-bold text-gradient mb-2">
-                  <CountUp target={stat.value} suffix={stat.suffix} />
-                </div>
-                <p className="text-sm text-text-secondary">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════ DEVELOPER SECTION ═══════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={stagger}
-            className="text-center mb-12"
-          >
-            <motion.div variants={fadeUp as any} className="text-sm font-medium text-accent uppercase tracking-widest mb-3">
-              For Developers
-            </motion.div>
-            <motion.h2 variants={fadeUp as any} className="text-3xl sm:text-4xl font-heading font-bold text-white mb-4">
-              Ship Intelligent Agents in Minutes
-            </motion.h2>
-            <motion.div variants={fadeUp as any} className="text-text-secondary max-w-xl mx-auto">
-              The NexusMind SDK gives you persistent memory, encrypted storage, and onchain provenance in a single TypeScript package.
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <CodeBlock
-              code={SDK_CODE}
-              language="typescript"
-              title="getting-started.ts"
-              showLineNumbers
+        
+        {/* Scroll Indicator */}
+        <motion.div 
+          style={{ opacity }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none"
+        >
+          <div className="w-[1px] h-10 bg-[var(--color-text-muted)]/30 relative overflow-hidden">
+            <motion.div 
+              className="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)] absolute left-1/2 -translate-x-1/2 top-0"
+              animate={{ y: [0, 40] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
             />
-          </motion.div>
-
-          <div className="mt-8 flex justify-center">
-            <Link href="/explorer" id="dev-explore-btn">
-              <Button variant="primary" size="lg">
-                Start Building <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
+        </motion.div>
+      </section>
+
+      {/* PROBLEM SECTION */}
+      <section className="bg-[var(--color-bg-surface)] py-24 md:py-32 border-t border-[var(--color-border-default)]">
+        <div className="container-custom">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            {PROBLEMS.map((prob, idx) => (
+              <motion.div key={idx} variants={item} className={`card card-accent border-b-2 ${prob.borderAccent}`}>
+                <prob.icon className="h-8 w-8 text-[var(--color-text-muted)] mb-6" strokeWidth={1.5} />
+                <h3 className="type-h4 mb-3">{prob.title}</h3>
+                <p className="type-body-sm">{prob.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* ═══════════════ FOOTER ═══════════════ */}
-      <Footer />
+      {/* ARCHITECTURE SECTION */}
+      <section className="bg-[var(--color-bg-base)] py-24 md:py-32">
+        <div className="container-custom">
+          <motion.div 
+            variants={scrollReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="mb-16"
+          >
+            <div className="type-eyebrow mb-4">ARCHITECTURE</div>
+            <h2 className="type-h2 mb-4">Memory that outlasts the agent</h2>
+            <p className="type-body max-w-2xl">
+              By separating the compute layer from the storage layer, NexusMind ensures that an agent's context survives process termination. State is continuously synced to decentralized storage.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            variants={scrollReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="w-full bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-xl p-8 overflow-hidden relative"
+          >
+            <div className="flex flex-col gap-2 max-w-4xl mx-auto">
+              <div className="h-12 bg-white/5 border border-white/10 rounded flex items-center justify-center type-label hover:bg-[var(--color-accent-dim)] hover:border-[var(--color-accent)] transition-colors cursor-default">Dashboard / Wallet Interface</div>
+              <div className="h-12 bg-white/5 border border-white/10 rounded flex items-center justify-center type-label hover:bg-[var(--color-accent-dim)] hover:border-[var(--color-accent)] transition-colors cursor-default">Agent Layer (Orchestrator / Researcher / Trader / Monitor)</div>
+              <div className="h-12 bg-white/5 border border-white/10 rounded flex items-center justify-center type-label hover:bg-[var(--color-accent-dim)] hover:border-[var(--color-accent)] transition-colors cursor-default">NexusMind SDK (@nexusmind/sdk)</div>
+              <div className="h-12 bg-white/5 border border-white/10 rounded flex items-center justify-center type-label hover:bg-[var(--color-accent-dim)] hover:border-[var(--color-accent)] transition-colors cursor-default">MemWal | Walrus Blobs | Seal | Sui Stack Msg</div>
+              <div className="h-12 bg-white/5 border border-white/10 rounded flex items-center justify-center type-label hover:bg-[var(--color-accent-dim)] hover:border-[var(--color-accent)] transition-colors cursor-default">Sui Blockchain (Provenance + Access Control)</div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FEATURE DEEP DIVES */}
+      <section className="bg-[var(--color-bg-base)] py-12 md:py-24">
+        <div className="container-custom flex flex-col gap-24 md:gap-32">
+          
+          {/* Feature 1 */}
+          <div className="feature-grid grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center border-b border-[var(--color-border-default)] pb-24 md:pb-32">
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
+              <div className="type-eyebrow mb-4">PERSISTENT MEMORY</div>
+              <h2 className="type-h2 mb-4">Memory that persists across every session</h2>
+              <p className="type-body mb-6">
+                Store context intelligently using the SDK. Every thought, action, and observation is persisted to Walrus and indexed by MemWal, available even if the agent is completely restarted.
+              </p>
+              <div className="code-block text-[13px]">
+                <div className="type-code"><span className="text-[#82AAFF]">remember</span>() → <span className="text-[#82AAFF]">recall</span>() → <span className="text-[#82AAFF]">restore</span>()</div>
+              </div>
+            </motion.div>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} className="bg-[var(--color-bg-surface)] h-64 md:h-80 rounded-xl border border-[var(--color-border-default)] flex items-center justify-center overflow-hidden">
+              <RefreshCcw className="w-16 h-16 text-[var(--color-accent)] opacity-50" strokeWidth={1} />
+            </motion.div>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="feature-grid grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center md:flex-row-reverse border-b border-[var(--color-border-default)] pb-24 md:pb-32" style={{ direction: 'rtl' }}>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} style={{ direction: 'ltr' }}>
+              <div className="type-eyebrow mb-4">ENCRYPTED SHARING</div>
+              <h2 className="type-h2 mb-4">Agents share secrets without exposing them</h2>
+              <p className="type-body mb-6">
+                Threshold encryption via Seal allows agents to securely share contextual memories with authorized peers. Only agents explicitly added to the allowlist can decrypt the Walrus blobs.
+              </p>
+              <div className="flex items-center gap-2 type-label text-[var(--color-text-secondary)]">
+                <Lock className="w-4 h-4 text-[var(--color-success)]" /> Access governed by onchain policies
+              </div>
+            </motion.div>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} style={{ direction: 'ltr' }} className="bg-[var(--color-bg-surface)] h-64 md:h-80 rounded-xl border border-[var(--color-border-default)] flex items-center justify-center">
+              <Lock className="w-16 h-16 text-[var(--color-accent)] opacity-50" strokeWidth={1} />
+            </motion.div>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="feature-grid grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center border-b border-[var(--color-border-default)] pb-24 md:pb-32">
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
+              <div className="type-eyebrow mb-4">VERIFIABLE ARTIFACT TRAIL</div>
+              <h2 className="type-h2 mb-4">Every artifact, recorded onchain</h2>
+              <p className="type-body mb-6">
+                Agent actions produce artifacts that are instantly hashed and recorded on the Sui blockchain. This provides cryptographic, undeniable proof of what the agent did and when it did it.
+              </p>
+              <div className="type-code text-[var(--color-code-text)]">
+                blob_id: jneof1nyh_beppoda-9936
+              </div>
+            </motion.div>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} className="bg-[var(--color-bg-surface)] h-64 md:h-80 rounded-xl border border-[var(--color-border-default)] flex items-center justify-center">
+              <Database className="w-16 h-16 text-[var(--color-accent)] opacity-50" strokeWidth={1} />
+            </motion.div>
+          </div>
+
+          {/* Feature 4 */}
+          <div className="feature-grid grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center" style={{ direction: 'rtl' }}>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} style={{ direction: 'ltr' }}>
+              <div className="type-eyebrow mb-4">DEVELOPER SDK</div>
+              <h2 className="type-h2 mb-4">One SDK. The entire stack.</h2>
+              <p className="type-body mb-6">
+                The NexusMind SDK abstracts away the complexities of Sui, Walrus, MemWal, and Seal. It provides a simple, unified interface for memory operations.
+              </p>
+              <div className="code-block inline-block w-full">
+                <span className="text-[#8A8CA8]">$</span> <span className="text-[#F0F0F8]">npm install @nexusmind/sdk</span>
+              </div>
+            </motion.div>
+            <motion.div variants={scrollReveal} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} style={{ direction: 'ltr' }} className="code-block h-64 md:h-80 overflow-y-auto">
+              <pre className="type-code text-[#F0F0F8]">
+                <span className="token-keyword">import</span> {'{'} AgentMemory {'}'} <span className="token-keyword">from</span> <span className="token-string">'@nexusmind/sdk'</span>;{'\n\n'}
+                <span className="token-keyword">const</span> memory = <span className="token-keyword">new</span> <span className="token-function">AgentMemory</span>({'{'}{'\n'}
+                {'  '}agentId: <span className="token-string">'0x123...'</span>,{'\n'}
+                {'  '}network: <span className="token-string">'testnet'</span>{'\n'}
+                {'}'});{'\n\n'}
+                <span className="token-comment">// Retrieve relevant past thoughts</span>{'\n'}
+                <span className="token-keyword">const</span> context = <span className="token-keyword">await</span> memory.<span className="token-function">recall</span>(<span className="token-string">"price analysis"</span>);{'\n\n'}
+                <span className="token-comment">// Execute logic...</span>{'\n\n'}
+                <span className="token-comment">// Store the result</span>{'\n'}
+                <span className="token-keyword">await</span> memory.<span className="token-function">remember</span>({'{'}{'\n'}
+                {'  '}content: <span className="token-string">"Analyzed SUI price trend..."</span>,{'\n'}
+                {'  '}type: <span className="token-string">'observation'</span>{'\n'}
+                {'}'});
+              </pre>
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* TECH PROOF SECTION */}
+      <section className="bg-[var(--color-bg-surface)] py-24 md:py-32 border-y border-[var(--color-border-default)]">
+        <div className="container-custom text-center">
+          <h2 className="type-h2 mb-12">Built on</h2>
+          
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 mb-16 opacity-80">
+            <div className="type-h3">Walrus</div>
+            <div className="type-h3">MemWal</div>
+            <div className="type-h3">Seal</div>
+            <div className="type-h3">Sui</div>
+          </div>
+          
+          <div className="w-full h-[1px] bg-[var(--color-border-default)] mb-16"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 text-left max-w-4xl mx-auto">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Onchain provenance for every artifact</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Threshold encryption via Seal</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">~400ms finality on Sui testnet*</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">50MB per artifact on Walrus*</span></div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Semantic memory search via MemWal</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Cross-session memory rebuild</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Agent-to-agent encrypted messaging</span></div>
+              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Dashboard deployed as Walrus Site</span></div>
+            </div>
+          </div>
+          
+          <p className="type-label mt-12 text-[var(--color-text-muted)]">*Source: official Sui and Walrus documentation</p>
+        </div>
+      </section>
+
+      {/* RESTORE DEMO PREVIEW */}
+      <section className="bg-[var(--color-bg-inset)] py-24 md:py-32">
+        <div className="container-custom text-center">
+          <div className="type-eyebrow mb-4">THE KILLER FEATURE</div>
+          <h2 className="type-h2 mb-4">Wipe the agent. The memory survives.</h2>
+          <p className="type-body max-w-2xl mx-auto mb-16">
+            If an agent is destroyed, its local memory is gone. Our restore function rebuilds the entire memory index directly from Walrus blobs, proving true decentralized persistence.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto mb-12 relative">
+            <div className="card text-left h-64 flex flex-col items-center justify-center border-dashed border-2">
+              <div className="type-h4 mb-2 text-[var(--color-text-muted)]">Memory index: 0 items</div>
+              <div className="type-label">Before</div>
+            </div>
+            
+            <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center justify-center w-12 h-12 bg-[var(--color-bg-elevated)] border border-[var(--color-border-default)] rounded-full z-10">
+              <span className="text-[var(--color-text-muted)]">→</span>
+            </div>
+            
+            <div className="card text-left h-64 flex flex-col justify-center border-[var(--color-accent-border)] bg-[var(--color-accent-dim)]">
+              <div className="space-y-3 w-full px-8">
+                <div className="h-4 w-full bg-[var(--color-bg-elevated)] rounded"></div>
+                <div className="h-4 w-5/6 bg-[var(--color-bg-elevated)] rounded"></div>
+                <div className="h-4 w-4/6 bg-[var(--color-bg-elevated)] rounded"></div>
+              </div>
+              <div className="mt-8 text-center">
+                <div className="type-h4 mb-1 text-[var(--color-success)]">Memory index: 1,421 items</div>
+                <div className="type-label">After restore()</div>
+              </div>
+            </div>
+          </div>
+          
+          <Link href="/restore" className="btn-primary">
+            See Live Demo →
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

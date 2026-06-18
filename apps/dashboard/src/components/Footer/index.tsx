@@ -1,105 +1,61 @@
 import Link from 'next/link';
-import { Brain, BookOpen, ExternalLink } from 'lucide-react';
-
-const TECH_STACK = [
-  { name: 'Walrus', desc: 'Decentralized storage' },
-  { name: 'Sui', desc: 'Smart contract platform' },
-  { name: 'Seal', desc: 'Threshold encryption' },
-  { name: 'MemWal', desc: 'Persistent AI memory' },
-];
-
-const RESOURCE_LINKS = [
-  { label: 'Documentation', href: '/docs', id: 'footer-docs' },
-  { label: 'SDK Reference', href: '/docs/sdk', id: 'footer-sdk' },
-  { label: 'GitHub', href: 'https://github.com/nexusmind', id: 'footer-github', external: true },
-  { label: 'Architecture', href: '/docs/architecture', id: 'footer-arch' },
-];
 
 export function Footer() {
   return (
-    <footer className="border-t border-border-default bg-bg-surface/50 mt-auto" role="contentinfo">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {/* About */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="relative h-7 w-7">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent to-purple-500 opacity-80" />
-                <div className="absolute inset-[2.5px] rounded-full bg-bg-base flex items-center justify-center">
-                  <Brain className="h-3 w-3 text-accent" />
-                </div>
-              </div>
-              <span className="font-heading font-bold text-base text-white">NexusMind</span>
+    <footer className="w-full bg-[var(--color-bg-base)] border-t border-[var(--color-border-default)] py-12">
+      <div className="container-custom">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          
+          {/* Logo & Tagline */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="4" r="3" fill="var(--color-text-muted)" />
+                <circle cx="4" cy="20" r="3" fill="var(--color-text-muted)" />
+                <circle cx="20" cy="20" r="3" fill="var(--color-text-muted)" />
+                <path d="M12 7 L5 17 M12 7 L19 17 M6 20 L18 20" stroke="var(--color-text-muted)" strokeWidth="1.5" />
+              </svg>
+              <span className="font-heading font-semibold text-[16px] text-[var(--color-text-muted)] tracking-tight">NexusMind</span>
             </div>
-            <p className="text-sm text-text-secondary leading-relaxed max-w-xs">
-              Verifiable, decentralized multi-agent coordination platform with persistent memory.
-              Where agents remember, reason, and persist across the decentralized web.
+            <p className="text-[13px] text-[var(--color-text-muted)] leading-relaxed max-w-xs">
+              Verifiable agent memory<br />
+              on decentralized infrastructure
             </p>
           </div>
-
-          {/* Technology */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-heading font-semibold text-white uppercase tracking-wider">
-              Technology
-            </h3>
-            <ul className="space-y-2.5">
-              {TECH_STACK.map((tech) => (
-                <li key={tech.name} className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent/60" />
-                  <span className="text-sm text-text-primary">{tech.name}</span>
-                  <span className="text-xs text-text-muted">— {tech.desc}</span>
-                </li>
-              ))}
-            </ul>
+          
+          {/* Links */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-[13px] font-semibold text-[var(--color-text-muted)] mb-2 uppercase tracking-wider">Links</h4>
+            <Link href="https://github.com/KikiProjecto/NexusMind" className="text-[13px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors w-fit">
+              GitHub
+            </Link>
+            <Link href="#" className="text-[13px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors w-fit">
+              Documentation
+            </Link>
+            <Link href="https://suiexplorer.com/" target="_blank" className="text-[13px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors w-fit">
+              Sui Explorer
+            </Link>
           </div>
 
-          {/* Resources */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-heading font-semibold text-white uppercase tracking-wider">
-              Resources
-            </h3>
-            <ul className="space-y-2.5">
-              {RESOURCE_LINKS.map((link) => (
-                <li key={link.id}>
-                  {link.external ? (
-                    <a
-                      href={link.href}
-                      id={link.id}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-accent transition-colors"
-                    >
-                      {link.label === 'GitHub' ? (
-                        <BookOpen className="h-3.5 w-3.5" />
-                      ) : (
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      )}
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      id={link.id}
-                      className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-accent transition-colors"
-                    >
-                      <BookOpen className="h-3.5 w-3.5" />
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+          {/* Stack */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-[13px] font-semibold text-[var(--color-text-muted)] mb-2 uppercase tracking-wider">Stack</h4>
+            <span className="text-[13px] text-[var(--color-text-muted)]">Walrus</span>
+            <span className="text-[13px] text-[var(--color-text-muted)]">MemWal</span>
+            <span className="text-[13px] text-[var(--color-text-muted)]">Seal</span>
+            <span className="text-[13px] text-[var(--color-text-muted)]">Sui</span>
           </div>
+
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-text-muted">
-            &copy; 2025 NexusMind. Built for the Sui ecosystem.
-          </p>
-          <div className="flex items-center gap-4 text-xs text-text-muted">
-            <span>Powered by Walrus &amp; Sui</span>
-          </div>
+        {/* Bottom row */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-8 border-t border-[var(--color-border-default)]/50 gap-4">
+          <span className="text-[13px] text-[var(--color-text-muted)]">
+            © 2025 NexusMind. MIT License.
+          </span>
+          <span className="text-[13px] text-[var(--color-text-muted)]">
+            Built for the Walrus Track — Sui Overflow 2026
+          </span>
         </div>
       </div>
     </footer>
