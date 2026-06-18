@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://nexus-mind.vercel.app
+      url: https://nexusmind.vercel.app
 
     steps:
       - name: Checkout
@@ -46,4 +46,4 @@ jobs:
       - name: Confirm deployment
         if: success()
         run: |
-          echo "Deployed to https://nexus-mind.vercel.app"
+          echo "Deployed to https://nexusmind.vercel.app"

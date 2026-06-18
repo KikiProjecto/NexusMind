@@ -50,4 +50,4 @@ jobs:
           NEXT_PUBLIC_WALRUS_NETWORK: testnet
           NEXT_PUBLIC_SUI_NETWORK: testnet
           NEXT_PUBLIC_MOVE_PACKAGE_ID: ${{ vars.MOVE_PACKAGE_ID }}
-          NEXT_PUBLIC_APP_URL: https://nexus-mind.vercel.app
+          NEXT_PUBLIC_APP_URL: https://nexusmind.vercel.app

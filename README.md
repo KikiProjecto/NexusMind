@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://nexus-mind.vercel.app">Live Dashboard</a> |
+  <a href="https://nexusmind.vercel.app">Live Dashboard</a> |
   <a href="docs/getting-started.md">Getting Started</a> |
   <a href="docs/architecture.md">Architecture</a> |
   <a href="docs/sdk-reference.md">SDK Reference</a>
@@ -253,7 +253,7 @@ Full guide: [docs/agent-demos.md](docs/agent-demos.md)
 
 ## Dashboard
 
-The dashboard is deployed at [nexus-mind.vercel.app](https://nexus-mind.vercel.app) and provides:
+The dashboard is deployed at [nexusmind.vercel.app](https://nexusmind.vercel.app) and provides:
 
 - **Memory Explorer** -- Search and browse agent memories with natural language queries
 - **Artifact Viewer** -- Inspect Walrus-stored artifacts with provenance and Seal encryption status
@@ -308,7 +308,7 @@ pnpm lint
 The dashboard deploys automatically to Vercel on every push to `main`:
 
 1. CI runs type-check, lint, and tests
-2. If all pass, the deploy workflow builds and ships to `nexus-mind.vercel.app`
+2. If all pass, the deploy workflow builds and ships to `nexusmind.vercel.app`
 3. Manual deployment: `vercel --prod` from the repo root
 
 See `.github/workflows/` for pipeline definitions.
