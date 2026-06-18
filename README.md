@@ -17,10 +17,6 @@
 
 # NexusMind
 
-<div align="center">
-  <img src="header.png" alt="current visual" width="100%"/>
-</div>
-
 NexusMind is a framework for building AI agent systems where every agent action is verifiable onchain, every artifact is stored on decentralized infrastructure, and every memory persists across sessions. Agents coordinate through encrypted messaging, share knowledge through namespaced semantic memory, and produce tamper-proof provenance records on the Sui blockchain.
 
 This is not a chatbot wrapper. It is a working coordination layer for autonomous agents backed by Sui Move smart contracts, Walrus decentralized storage, MemWal persistent memory, and Seal threshold encryption.
