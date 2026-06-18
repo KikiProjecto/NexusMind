@@ -258,38 +258,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TECH PROOF SECTION */}
-      <section className="bg-[var(--color-bg-surface)] py-24 md:py-32 border-y border-[var(--color-border-default)]">
-        <div className="container-custom text-center">
-          <h2 className="type-h2 mb-12">Built on</h2>
-          
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 mb-16 opacity-80">
-            <div className="type-h3">Walrus</div>
-            <div className="type-h3">MemWal</div>
-            <div className="type-h3">Seal</div>
-            <div className="type-h3">Sui</div>
-          </div>
-          
-          <div className="w-full h-[1px] bg-[var(--color-border-default)] mb-16"></div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 text-left max-w-4xl mx-auto">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Onchain provenance for every artifact</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Threshold encryption via Seal</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">~400ms finality on Sui testnet*</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">50MB per artifact on Walrus*</span></div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Semantic memory search via MemWal</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Cross-session memory rebuild</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Agent-to-agent encrypted messaging</span></div>
-              <div className="flex items-center gap-3"><span className="text-[var(--color-success)]">✓</span> <span className="type-body">Dashboard deployed as Walrus Site</span></div>
-            </div>
-          </div>
-          
-          <p className="type-label mt-12 text-[var(--color-text-muted)]">*Source: official Sui and Walrus documentation</p>
-        </div>
-      </section>
+
 
       {/* RESTORE DEMO PREVIEW */}
       <section className="bg-[var(--color-bg-inset)] py-24 md:py-32">

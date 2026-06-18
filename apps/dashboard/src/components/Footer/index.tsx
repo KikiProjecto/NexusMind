@@ -53,9 +53,6 @@ export function Footer() {
           <span className="text-[13px] text-[var(--color-text-muted)]">
             © 2025 NexusMind. MIT License.
           </span>
-          <span className="text-[13px] text-[var(--color-text-muted)]">
-            Built for the Walrus Track — Sui Overflow 2026
-          </span>
         </div>
       </div>
     </footer>
