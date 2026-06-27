@@ -285,7 +285,7 @@ All configuration is through environment variables. See `.env.example` for the c
 
 ## Testing
 
-Unit tests use Vitest with fully mocked clients (no network calls required):
+Unit tests use Vitest with fully mocked clients (no network calls required)
 
 ```bash
 # Run all tests
