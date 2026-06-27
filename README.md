@@ -324,12 +324,4 @@ See `.github/workflows/` for pipeline definitions.
 | [SDK Reference](docs/sdk-reference.md) | Full API documentation for `@nexusmind/sdk` |
 | [Agent Demos](docs/agent-demos.md) | How to run and extend each agent implementation |
 
----
 
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-Built with Sui Move, Walrus, MemWal, Seal, and Sui Stack Messaging.
