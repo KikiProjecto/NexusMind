@@ -323,5 +323,3 @@ See `.github/workflows/` for pipeline definitions.
 | [Architecture](docs/architecture.md) | System design, component relationships, data flow |
 | [SDK Reference](docs/sdk-reference.md) | Full API documentation for `@nexusmind/sdk` |
 | [Agent Demos](docs/agent-demos.md) | How to run and extend each agent implementation |
-
-
